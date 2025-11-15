@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quitter/design_tokens.dart';
 import 'package:quitter/quit_milestone.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -34,15 +35,15 @@ class TimelineTile extends StatelessWidget {
             child: Column(
               children: [
                 Container(
-                  width: 24,
-                  height: 24,
+                  width: DesignTokens.iconMD,
+                  height: DesignTokens.iconMD,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: isCompleted
                         ? colorScheme.primary
                         : isNext
                         ? colorScheme.secondary
-                        : colorScheme.outline.withAlpha((255 * 0.3).round()),
+                        : colorScheme.outline.withOpacity(DesignTokens.opacityLight),
                     border: Border.all(
                       color: isCompleted
                           ? colorScheme.primary
@@ -55,13 +56,13 @@ class TimelineTile extends StatelessWidget {
                   child: isCompleted
                       ? Icon(
                           Icons.check,
-                          size: 16,
+                          size: DesignTokens.iconXS,
                           color: colorScheme.onPrimary,
                         )
                       : isNext
                       ? Icon(
                           Icons.radio_button_unchecked,
-                          size: 12,
+                          size: DesignTokens.space3,
                           color: colorScheme.onSecondary,
                         )
                       : null,
@@ -71,13 +72,14 @@ class TimelineTile extends StatelessWidget {
                   Expanded(
                     child: Container(
                       width: 3,
-                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      margin: const EdgeInsets.symmetric(
+                        vertical: DesignTokens.space2,
+                      ),
                       decoration: BoxDecoration(
                         color: isCompleted
                             ? colorScheme.primary
-                            : colorScheme.outline.withAlpha(
-                                (255 * 0.3).round(),
-                              ),
+                            : colorScheme.outline
+                                .withOpacity(DesignTokens.opacityLight),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -85,18 +87,19 @@ class TimelineTile extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: DesignTokens.space4),
 
           Expanded(
             child: Container(
-              margin: const EdgeInsets.only(bottom: 24),
-              padding: const EdgeInsets.all(16),
+              margin: const EdgeInsets.only(bottom: DesignTokens.space6),
+              padding: const EdgeInsets.all(DesignTokens.space4),
               decoration: BoxDecoration(
                 color: colorScheme.surface,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(DesignTokens.radiusMD),
                 boxShadow: [
                   BoxShadow(
-                    color: colorScheme.shadow.withAlpha((255 * 0.05).round()),
+                    color: colorScheme.shadow
+                        .withOpacity(DesignTokens.opacitySubtle / 2),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
@@ -104,9 +107,8 @@ class TimelineTile extends StatelessWidget {
                 border: isNext
                     ? Border.all(color: colorScheme.secondary, width: 2)
                     : Border.all(
-                        color: colorScheme.outline.withAlpha(
-                          (255 * 0.1).round(),
-                        ),
+                        color: colorScheme.outline
+                            .withOpacity(DesignTokens.opacitySubtle),
                       ),
               ),
               child: Column(
@@ -116,18 +118,17 @@ class TimelineTile extends StatelessWidget {
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
+                          horizontal: DesignTokens.space2,
+                          vertical: DesignTokens.space1,
                         ),
                         decoration: BoxDecoration(
                           color: isCompleted
                               ? colorScheme.primary
                               : isNext
                               ? colorScheme.secondary
-                              : colorScheme.outline.withAlpha(
-                                  (255 * 0.3).round(),
-                                ),
-                          borderRadius: BorderRadius.circular(12),
+                              : colorScheme.outline
+                                  .withOpacity(DesignTokens.opacityLight),
+                          borderRadius: BorderRadius.circular(DesignTokens.radiusMD),
                         ),
                         child: Text(
                           milestone.day >= 365
@@ -144,7 +145,7 @@ class TimelineTile extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: DesignTokens.space2),
                       if (achievements.isNotEmpty &&
                           achievements.length <= 5) ...[
                         Row(
@@ -155,7 +156,10 @@ class TimelineTile extends StatelessWidget {
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 2.0,
                                   ),
-                                  child: Icon(Icons.history, size: 16),
+                                  child: Icon(
+                                    Icons.history,
+                                    size: DesignTokens.iconXS,
+                                  ),
                                 ),
                               )
                               .toList(),
@@ -166,10 +170,10 @@ class TimelineTile extends StatelessWidget {
                           children: [
                             Icon(
                               Icons.history,
-                              size: 16,
+                              size: DesignTokens.iconXS,
                               color: colorScheme.tertiary,
                             ),
-                            const SizedBox(width: 2),
+                            const SizedBox(width: DesignTokens.space1 / 2),
                             Text(
                               '${achievements.length}',
                               style: TextStyle(
@@ -182,7 +186,7 @@ class TimelineTile extends StatelessWidget {
                       ],
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: DesignTokens.space2),
                   Text(
                     milestone.title,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -193,7 +197,7 @@ class TimelineTile extends StatelessWidget {
                           : colorScheme.onSurfaceVariant,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: DesignTokens.space2),
                   Text(
                     milestone.description,
                     style: TextStyle(
@@ -202,23 +206,23 @@ class TimelineTile extends StatelessWidget {
                       color: colorScheme.onSurface,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: DesignTokens.space3),
                   GestureDetector(
                     onTap: () => launchUrl(Uri.parse(milestone.link)),
                     child: Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(DesignTokens.space2),
                       decoration: BoxDecoration(
                         color: colorScheme.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(DesignTokens.radiusSM),
                       ),
                       child: Row(
                         children: [
                           Icon(
                             Icons.science,
-                            size: 16,
+                            size: DesignTokens.iconXS,
                             color: colorScheme.onSurfaceVariant,
                           ),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: DesignTokens.space2 - 2),
                           Expanded(
                             child: Text(
                               milestone.reference,

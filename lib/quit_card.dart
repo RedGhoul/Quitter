@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:quitter/design_tokens.dart';
 import 'package:quitter/utils.dart';
 
 class QuitCard extends StatelessWidget {
@@ -30,9 +31,11 @@ class QuitCard extends StatelessWidget {
     return Hero(
       tag: title,
       child: Card(
-        elevation: 0,
+        elevation: DesignTokens.elevation0,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(DesignTokens.radiusXL),
+        ),
         clipBehavior: Clip.antiAlias,
         child: Container(
           decoration: BoxDecoration(
@@ -43,7 +46,8 @@ class QuitCard extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: gradientColors.first.withAlpha(255 ~/ (1 / 0.3)),
+                color: gradientColors.first
+                    .withOpacity(DesignTokens.opacityLight),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               ),
@@ -54,44 +58,47 @@ class QuitCard extends StatelessWidget {
             child: InkWell(
               onTap: onTap,
               onLongPress: onLongPress,
-              borderRadius: BorderRadius.circular(20),
-              splashColor: Colors.white.withAlpha(255 ~/ (1 / 0.3)),
-              highlightColor: Colors.white.withAlpha(255 ~/ (1 / 0.1)),
+              borderRadius: BorderRadius.circular(DesignTokens.radiusXL),
+              splashColor:
+                  Colors.white.withOpacity(DesignTokens.opacityLight),
+              highlightColor:
+                  Colors.white.withOpacity(DesignTokens.opacitySubtle),
               child: Container(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(DesignTokens.space5),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.surface.withAlpha(255 ~/ (1 / 0.9)),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusXL),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .surface
+                      .withOpacity(DesignTokens.opacitySemiTransparent),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(DesignTokens.space3),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: gradientColors,
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(DesignTokens.radiusMD),
                       ),
                       child: Icon(
                         icon,
                         color: getContrastingColor(gradientColors.last),
-                        size: 24,
+                        size: DesignTokens.iconMD,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: DesignTokens.space4),
                     Text(
                       title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: DesignTokens.space1),
                     if (days != null) ...[
                       RichText(
                         text: TextSpan(
@@ -106,7 +113,7 @@ class QuitCard extends StatelessWidget {
                                     color: Theme.of(context)
                                         .colorScheme
                                         .onSurface
-                                        .withAlpha(255 ~/ (1 / 0.7)),
+                                        .withOpacity(DesignTokens.opacityMediumEmphasis),
                                   ),
                             ),
                           ],
@@ -116,26 +123,28 @@ class QuitCard extends StatelessWidget {
                       Text(
                         'Tap to start',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withAlpha(255 ~/ (1 / 0.6)),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(DesignTokens.opacityMediumEmphasis),
                           fontStyle: FontStyle.italic,
                         ),
                       ),
                     ],
 
                     if (quitDate != null) ...[
-                      const SizedBox(height: 16),
+                      const SizedBox(height: DesignTokens.space4),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
+                          horizontal: DesignTokens.space2,
+                          vertical: DesignTokens.space1,
                         ),
                         decoration: BoxDecoration(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.primary.withAlpha(255 ~/ (1 / 0.1)),
-                          borderRadius: BorderRadius.circular(8),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(DesignTokens.opacitySubtle),
+                          borderRadius: BorderRadius.circular(DesignTokens.radiusSM),
                         ),
                         child: Text(
                           DateFormat.yMMMd().format(DateTime.parse(quitDate!)),
