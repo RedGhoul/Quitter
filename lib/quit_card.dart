@@ -6,7 +6,7 @@ import 'package:quitter/components/indicators/progress_ring.dart';
 import 'package:quitter/design_tokens.dart';
 import 'package:quitter/utils.dart';
 
-class QuitCard extends StatelessWidget {
+class QuitCard extends StatefulWidget {
   const QuitCard({
     super.key,
     required this.context,
@@ -27,13 +27,75 @@ class QuitCard extends StatelessWidget {
   final VoidCallback onLongPress;
 
   @override
+  State<QuitCard> createState() => _QuitCardState();
+}
+
+class _QuitCardState extends State<QuitCard>
+    with SingleTickerProviderStateMixin {
+  bool _isHovered = false;
+  late AnimationController _hoverController;
+  late Animation<double> _elevationAnimation;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _hoverController = AnimationController(
+      duration: DesignTokens.durationFast,
+      vsync: this,
+    );
+
+    _elevationAnimation = Tween<double>(
+      begin: 0,
+      end: 4,
+    ).animate(CurvedAnimation(
+      parent: _hoverController,
+      curve: DesignTokens.curveStandard,
+    ));
+
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.02,
+    ).animate(CurvedAnimation(
+      parent: _hoverController,
+      curve: DesignTokens.curveStandard,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _hoverController.dispose();
+    super.dispose();
+  }
+
+  void _onHoverChanged(bool hovering) {
+    setState(() {
+      _isHovered = hovering;
+    });
+    if (hovering) {
+      _hoverController.forward();
+    } else {
+      _hoverController.reverse();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     int? days;
-    if (quitDate != null) days = daysCeil(quitDate!);
+    if (widget.quitDate != null) days = daysCeil(widget.quitDate!);
 
-    return Hero(
-      tag: title,
-      child: Card(
+    return MouseRegion(
+      onEnter: (_) => _onHoverChanged(true),
+      onExit: (_) => _onHoverChanged(false),
+      cursor: SystemMouseCursors.click,
+      child: AnimatedBuilder(
+        animation: _hoverController,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: _scaleAnimation.value,
+            child: Hero(
+              tag: widget.title,
+              child: Card(
         elevation: DesignTokens.elevation0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
@@ -43,24 +105,25 @@ class QuitCard extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: gradientColors,
+              colors: widget.gradientColors,
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             boxShadow: [
               BoxShadow(
-                color: gradientColors.first
+                color: widget.gradientColors.first
                     .withOpacity(DesignTokens.opacityLight),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
+                blurRadius: _isHovered ? 16 : 8,
+                offset: Offset(0, _elevationAnimation.value + 4),
+                spreadRadius: _isHovered ? 2 : 0,
               ),
             ],
           ),
           child: Material(
             color: Colors.transparent,
             child: InkWell(
-              onTap: onTap,
-              onLongPress: onLongPress,
+              onTap: widget.onTap,
+              onLongPress: widget.onLongPress,
               borderRadius: BorderRadius.circular(DesignTokens.radiusXL),
               splashColor:
                   Colors.white.withOpacity(DesignTokens.opacityLight),
@@ -85,27 +148,27 @@ class QuitCard extends StatelessWidget {
                           progress: days != null ? ((days % 7) / 7.0) : 0.0,
                           size: DesignTokens.iconXL + DesignTokens.space6,
                           strokeWidth: 3,
-                          color: gradientColors.last,
+                          color: widget.gradientColors.last,
                           child: Container(
                             padding: const EdgeInsets.all(DesignTokens.space3),
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
-                                colors: gradientColors,
+                                colors: widget.gradientColors,
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
                               borderRadius: BorderRadius.circular(DesignTokens.radiusMD),
                             ),
                             child: Icon(
-                              icon,
-                              color: getContrastingColor(gradientColors.last),
+                              widget.icon,
+                              color: getContrastingColor(widget.gradientColors.last),
                               size: DesignTokens.iconMD,
                             ),
                           ),
                         ),
                     const SizedBox(height: DesignTokens.space4),
                     Text(
-                      title,
+                      widget.title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -147,7 +210,7 @@ class QuitCard extends StatelessWidget {
                       ),
                     ],
 
-                    if (quitDate != null) ...[
+                    if (widget.quitDate != null) ...[
                       const SizedBox(height: DesignTokens.space4),
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -162,7 +225,7 @@ class QuitCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(DesignTokens.radiusSM),
                         ),
                         child: Text(
-                          DateFormat.yMMMd().format(DateTime.parse(quitDate!)),
+                          DateFormat.yMMMd().format(DateTime.parse(widget.quitDate!)),
                           style: Theme.of(context).textTheme.bodySmall
                               ?.copyWith(
                                 color: Theme.of(context).colorScheme.primary,
@@ -233,10 +296,14 @@ class QuitCard extends StatelessWidget {
               ),
             ),
           ],
+                  ),
                 ),
               ),
             ),
           ),
+              ),
+            );
+          },
         ),
       ),
     );
