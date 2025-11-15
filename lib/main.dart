@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:quitter/addiction_provider.dart';
 import 'package:quitter/app_scheme.dart';
+import 'package:quitter/app_typography.dart';
 import 'package:quitter/home_page.dart';
 import 'package:quitter/journal_page.dart';
 import 'package:quitter/pin_page.dart';
@@ -132,10 +133,12 @@ class _QuitterAppState extends State<QuitterApp>
               theme: ThemeData(
                 colorScheme: lightColorScheme,
                 useMaterial3: true,
+                textTheme: AppTypography.getTextTheme(),
               ),
               darkTheme: ThemeData(
                 colorScheme: darkColorScheme,
                 useMaterial3: true,
+                textTheme: AppTypography.getTextTheme(),
                 scaffoldBackgroundColor:
                     settings.themeMode == AppThemeMode.pureBlack
                     ? Colors.black

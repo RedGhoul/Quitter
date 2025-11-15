@@ -1,17 +1,34 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:quitter/design_tokens.dart';
+
+/// Type of confetti explosion
+enum ConfettiType {
+  /// Standard explosion from bottom-right
+  standard,
+
+  /// Firework explosion from center
+  firework,
+
+  /// Fountain shooting upwards
+  fountain,
+}
 
 class ConfettiWidget extends StatefulWidget {
   final Widget child;
   final bool active;
   final VoidCallback? onAnimationComplete;
+  final ConfettiType type;
+  final int particleCount;
 
   const ConfettiWidget({
     super.key,
     required this.child,
     this.active = false,
     this.onAnimationComplete,
+    this.type = ConfettiType.standard,
+    this.particleCount = 60,
   });
 
   @override
@@ -28,7 +45,7 @@ class _ConfettiWidgetState extends State<ConfettiWidget>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 2500),
+      duration: DesignTokens.durationCelebration,
       vsync: this,
     );
 
@@ -62,28 +79,62 @@ class _ConfettiWidgetState extends State<ConfettiWidget>
     setState(() {
       confettiPieces.clear();
 
-      for (int i = 0; i < 60; i++) {
-        final screenWidth = MediaQuery.of(context).size.width;
-        final screenHeight = MediaQuery.of(context).size.height;
+      final screenWidth = MediaQuery.of(context).size.width;
+      final screenHeight = MediaQuery.of(context).size.height;
 
-        confettiPieces.add(
-          ConfettiPiece(
-            x: screenWidth * 0.85 + (random.nextDouble() - 0.5) * 100,
-            y: screenHeight * 0.85,
-            color: _getRandomColor(),
-            size: random.nextDouble() * 6 + 3,
-            velocityX: (random.nextDouble() - 0.5) * 8,
-            velocityY: -(random.nextDouble() * 8 + 5),
-            rotation: random.nextDouble() * 2 * pi,
-            rotationSpeed: (random.nextDouble() - 0.5) * 0.3,
-            gravity: 0.2,
-          ),
-        );
+      for (int i = 0; i < widget.particleCount; i++) {
+        final piece = _createConfettiPiece(screenWidth, screenHeight);
+        confettiPieces.add(piece);
       }
     });
 
     _animationController.reset();
     _animationController.forward();
+  }
+
+  ConfettiPiece _createConfettiPiece(double screenWidth, double screenHeight) {
+    switch (widget.type) {
+      case ConfettiType.standard:
+        return ConfettiPiece(
+          x: screenWidth * 0.85 + (random.nextDouble() - 0.5) * 100,
+          y: screenHeight * 0.85,
+          color: _getRandomColor(),
+          size: random.nextDouble() * 6 + 3,
+          velocityX: (random.nextDouble() - 0.5) * 8,
+          velocityY: -(random.nextDouble() * 8 + 5),
+          rotation: random.nextDouble() * 2 * pi,
+          rotationSpeed: (random.nextDouble() - 0.5) * 0.3,
+          gravity: 0.2,
+        );
+
+      case ConfettiType.firework:
+        final angle = random.nextDouble() * 2 * pi;
+        final speed = random.nextDouble() * 10 + 5;
+        return ConfettiPiece(
+          x: screenWidth / 2,
+          y: screenHeight / 2,
+          color: _getRandomColor(),
+          size: random.nextDouble() * 6 + 3,
+          velocityX: cos(angle) * speed,
+          velocityY: sin(angle) * speed,
+          rotation: random.nextDouble() * 2 * pi,
+          rotationSpeed: (random.nextDouble() - 0.5) * 0.3,
+          gravity: 0.15,
+        );
+
+      case ConfettiType.fountain:
+        return ConfettiPiece(
+          x: screenWidth / 2 + (random.nextDouble() - 0.5) * 50,
+          y: screenHeight,
+          color: _getRandomColor(),
+          size: random.nextDouble() * 6 + 3,
+          velocityX: (random.nextDouble() - 0.5) * 6,
+          velocityY: -(random.nextDouble() * 12 + 8),
+          rotation: random.nextDouble() * 2 * pi,
+          rotationSpeed: (random.nextDouble() - 0.5) * 0.3,
+          gravity: 0.25,
+        );
+    }
   }
 
   Color _getRandomColor() {
