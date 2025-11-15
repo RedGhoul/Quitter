@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:quitter/components/indicators/achievement_badge.dart';
+import 'package:quitter/components/indicators/animated_counter.dart';
+import 'package:quitter/components/indicators/progress_ring.dart';
 import 'package:quitter/design_tokens.dart';
 import 'package:quitter/utils.dart';
 
@@ -72,25 +75,34 @@ class QuitCard extends StatelessWidget {
                       .surface
                       .withOpacity(DesignTokens.opacitySemiTransparent),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Stack(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(DesignTokens.space3),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: gradientColors,
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Icon with progress ring
+                        ProgressRing(
+                          progress: days != null ? ((days % 7) / 7.0) : 0.0,
+                          size: DesignTokens.iconXL + DesignTokens.space6,
+                          strokeWidth: 3,
+                          color: gradientColors.last,
+                          child: Container(
+                            padding: const EdgeInsets.all(DesignTokens.space3),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: gradientColors,
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(DesignTokens.radiusMD),
+                            ),
+                            child: Icon(
+                              icon,
+                              color: getContrastingColor(gradientColors.last),
+                              size: DesignTokens.iconMD,
+                            ),
+                          ),
                         ),
-                        borderRadius: BorderRadius.circular(DesignTokens.radiusMD),
-                      ),
-                      child: Icon(
-                        icon,
-                        color: getContrastingColor(gradientColors.last),
-                        size: DesignTokens.iconMD,
-                      ),
-                    ),
                     const SizedBox(height: DesignTokens.space4),
                     Text(
                       title,
@@ -100,24 +112,27 @@ class QuitCard extends StatelessWidget {
                     ),
                     const SizedBox(height: DesignTokens.space1),
                     if (days != null) ...[
-                      RichText(
-                        text: TextSpan(
-                          style: Theme.of(context).textTheme.headlineSmall
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                          children: [
-                            TextSpan(text: '$days'),
-                            TextSpan(
-                              text: days == 1 ? ' day' : ' days',
-                              style: Theme.of(context).textTheme.bodyLarge
-                                  ?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(DesignTokens.opacityMediumEmphasis),
-                                  ),
-                            ),
-                          ],
-                        ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          AnimatedCounter(
+                            value: days,
+                            style: Theme.of(context).textTheme.headlineSmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(width: DesignTokens.space1),
+                          Text(
+                            days == 1 ? 'day' : 'days',
+                            style: Theme.of(context).textTheme.bodyLarge
+                                ?.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(DesignTokens.opacityMediumEmphasis),
+                                ),
+                          ),
+                        ],
                       ),
                     ] else ...[
                       Text(
@@ -157,6 +172,67 @@ class QuitCard extends StatelessWidget {
                       ),
                     ],
                   ],
+                ),
+              ),
+            ],
+
+            // Achievement badges (positioned absolutely)
+            if (days != null) ...[
+              Positioned(
+                top: DesignTokens.space2,
+                right: DesignTokens.space2,
+                child: Row(
+                  children: [
+                    if (days >= 365) ...[
+                      AchievementBadge(
+                        icon: Icons.star,
+                        color: Colors.amber,
+                        tooltip: '${(days / 365).floor()} Year${days >= 730 ? 's' : ''}!',
+                      ),
+                      const SizedBox(width: DesignTokens.space1),
+                    ],
+                    if (days >= 90 && days < 365) ...[
+                      AchievementBadge(
+                        icon: Icons.workspace_premium,
+                        color: Colors.purple,
+                        tooltip: '90 Days!',
+                      ),
+                      const SizedBox(width: DesignTokens.space1),
+                    ],
+                    if (days >= 30 && days < 90)
+                      AchievementBadge(
+                        icon: Icons.local_fire_department,
+                        color: Colors.orange,
+                        tooltip: '30 Days!',
+                      ),
+                    if (days >= 7 && days < 30)
+                      AchievementBadge(
+                        icon: Icons.thumb_up,
+                        color: Colors.green,
+                        tooltip: '1 Week!',
+                      ),
+                  ],
+                ),
+              ),
+            ],
+
+            // Glassmorphism overlay (subtle)
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusXL),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Colors.white.withOpacity(0.08),
+                      Colors.white.withOpacity(0.02),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
                 ),
               ),
             ),
