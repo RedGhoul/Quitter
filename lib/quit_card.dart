@@ -5,6 +5,7 @@ import 'package:quitter/components/indicators/animated_counter.dart';
 import 'package:quitter/components/indicators/progress_ring.dart';
 import 'package:quitter/design_tokens.dart';
 import 'package:quitter/utils.dart';
+import 'package:quitter/utils/accessibility_utils.dart';
 
 class QuitCard extends StatefulWidget {
   const QuitCard({
@@ -84,18 +85,47 @@ class _QuitCardState extends State<QuitCard>
     int? days;
     if (widget.quitDate != null) days = daysCeil(widget.quitDate!);
 
-    return MouseRegion(
-      onEnter: (_) => _onHoverChanged(true),
-      onExit: (_) => _onHoverChanged(false),
-      cursor: SystemMouseCursors.click,
-      child: AnimatedBuilder(
-        animation: _hoverController,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: _scaleAnimation.value,
-            child: Hero(
-              tag: widget.title,
-              child: Card(
+    // Build semantic label and value for screen readers
+    final String semanticLabel = widget.title;
+    final String semanticValue = days != null
+        ? '$days ${days == 1 ? 'day' : 'days'} clean'
+        : 'Not started';
+    final String semanticHint = days != null
+        ? 'Double tap to view details and milestones. Long press for options.'
+        : 'Double tap to set a quit date and start tracking.';
+
+    // Get achievement description for screen reader
+    String achievementDescription = '';
+    if (days != null) {
+      if (days >= 365) {
+        achievementDescription =
+            ' Achievement: ${(days / 365).floor()} year${days >= 730 ? 's' : ''} milestone reached!';
+      } else if (days >= 90) {
+        achievementDescription = ' Achievement: 90 days milestone reached!';
+      } else if (days >= 30) {
+        achievementDescription = ' Achievement: 30 days milestone reached!';
+      } else if (days >= 7) {
+        achievementDescription = ' Achievement: 1 week milestone reached!';
+      }
+    }
+
+    return AccessibilityUtils.buildSemanticCard(
+      label: semanticLabel,
+      value: semanticValue + achievementDescription,
+      hint: semanticHint,
+      onTap: widget.onTap,
+      child: MouseRegion(
+        onEnter: (_) => _onHoverChanged(true),
+        onExit: (_) => _onHoverChanged(false),
+        cursor: SystemMouseCursors.click,
+        child: AnimatedBuilder(
+          animation: _hoverController,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: _scaleAnimation.value,
+              child: Hero(
+                tag: widget.title,
+                child: Card(
         elevation: DesignTokens.elevation0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
@@ -301,9 +331,10 @@ class _QuitCardState extends State<QuitCard>
               ),
             ),
           ),
-              ),
-            );
-          },
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

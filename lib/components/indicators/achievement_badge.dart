@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quitter/design_tokens.dart';
+import 'package:quitter/utils/accessibility_utils.dart';
 
 /// Small badge that appears on cards to show achievements and milestones.
 ///
@@ -62,13 +63,18 @@ class AchievementBadge extends StatelessWidget {
       ),
     );
 
-    if (tooltip != null) {
-      return Tooltip(
-        message: tooltip!,
-        child: badge,
-      );
-    }
+    final badgeWithTooltip = tooltip != null
+        ? Tooltip(
+            message: tooltip!,
+            child: badge,
+          )
+        : badge;
 
-    return badge;
+    // Add semantic label for screen readers
+    return Semantics(
+      label: tooltip ?? 'Achievement badge',
+      readOnly: true,
+      child: ExcludeSemantics(child: badgeWithTooltip),
+    );
   }
 }

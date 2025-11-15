@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quitter/design_tokens.dart';
+import 'package:quitter/utils/accessibility_utils.dart';
 
 /// Custom button component with press animations and loading states.
 ///
@@ -90,8 +91,23 @@ class _AppButtonState extends State<AppButton>
             label: Text(widget.text),
           );
 
+    final semanticLabel = widget.text;
+    final semanticHint = widget.isLoading
+        ? 'Loading, please wait'
+        : widget.onPressed == null
+            ? 'Button is disabled'
+            : 'Double tap to activate';
+
+    final semanticButton = AccessibilityUtils.buildSemanticButton(
+      label: semanticLabel,
+      hint: semanticHint,
+      enabled: widget.onPressed != null && !widget.isLoading,
+      onTap: widget.onPressed,
+      child: button,
+    );
+
     if (widget.onPressed == null || widget.isLoading) {
-      return button;
+      return semanticButton;
     }
 
     return GestureDetector(
@@ -100,7 +116,7 @@ class _AppButtonState extends State<AppButton>
       onTapCancel: _handleTapCancel,
       child: ScaleTransition(
         scale: _scaleAnimation,
-        child: button,
+        child: semanticButton,
       ),
     );
   }

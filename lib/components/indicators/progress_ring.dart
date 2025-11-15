@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quitter/design_tokens.dart';
+import 'package:quitter/utils/accessibility_utils.dart';
 import 'dart:math' as math;
 
 /// Circular progress ring that displays around an icon.
@@ -43,33 +44,38 @@ class ProgressRing extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: size,
-      height: size,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Background ring (full circle)
-          CustomPaint(
-            size: Size(size, size),
-            painter: _ProgressRingPainter(
-              progress: 1.0,
-              strokeWidth: strokeWidth,
-              color: color.withOpacity(DesignTokens.opacitySubtle * 2),
+    return AccessibilityUtils.buildSemanticProgress(
+      label: 'Weekly progress',
+      progress: progress,
+      hint: 'Shows your progress through the current week',
+      child: SizedBox(
+        width: size,
+        height: size,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // Background ring (full circle)
+            CustomPaint(
+              size: Size(size, size),
+              painter: _ProgressRingPainter(
+                progress: 1.0,
+                strokeWidth: strokeWidth,
+                color: color.withOpacity(DesignTokens.opacitySubtle * 2),
+              ),
             ),
-          ),
-          // Progress ring (partial arc)
-          CustomPaint(
-            size: Size(size, size),
-            painter: _ProgressRingPainter(
-              progress: progress,
-              strokeWidth: strokeWidth,
-              color: color,
+            // Progress ring (partial arc)
+            CustomPaint(
+              size: Size(size, size),
+              painter: _ProgressRingPainter(
+                progress: progress,
+                strokeWidth: strokeWidth,
+                color: color,
+              ),
             ),
-          ),
-          // Center content
-          child,
-        ],
+            // Center content
+            child,
+          ],
+        ),
       ),
     );
   }

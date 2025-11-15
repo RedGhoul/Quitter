@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quitter/design_tokens.dart';
+import 'package:quitter/utils/accessibility_utils.dart';
 
 /// Empty state component for displaying when no content is available.
 ///
@@ -37,12 +38,18 @@ class AppEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(DesignTokens.space8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+    return Semantics(
+      label: title,
+      value: message,
+      hint: actionLabel != null
+          ? 'Use the $actionLabel button to get started'
+          : null,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(DesignTokens.space8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
             // Icon in circle
             Container(
               width: DesignTokens.icon2XL + DesignTokens.space6,
@@ -93,7 +100,8 @@ class AppEmptyState extends StatelessWidget {
                 label: Text(actionLabel!),
               ),
             ],
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -188,4 +188,70 @@ class DesignTokens {
 
   /// 90% - Semi-transparent surfaces
   static const double opacitySemiTransparent = 0.90;
+
+  // ============================================================
+  // ACCESSIBILITY HELPERS
+  // ============================================================
+
+  /// Get animation duration with reduced motion support
+  ///
+  /// Returns Duration.zero if reduced motion is enabled in system settings,
+  /// otherwise returns the specified duration.
+  ///
+  /// Usage:
+  /// ```dart
+  /// AnimationController(
+  ///   duration: DesignTokens.getDuration(context, DesignTokens.durationNormal),
+  ///   vsync: this,
+  /// );
+  /// ```
+  static Duration getDuration(BuildContext context, Duration normal) {
+    final reducedMotion = MediaQuery.of(context).disableAnimations;
+    return reducedMotion ? Duration.zero : normal;
+  }
+
+  /// Get fast animation duration with reduced motion support
+  static Duration getDurationFast(BuildContext context) {
+    return getDuration(context, durationFast);
+  }
+
+  /// Get normal animation duration with reduced motion support
+  static Duration getDurationNormal(BuildContext context) {
+    return getDuration(context, durationNormal);
+  }
+
+  /// Get slow animation duration with reduced motion support
+  static Duration getDurationSlow(BuildContext context) {
+    return getDuration(context, durationSlow);
+  }
+
+  /// Get slower animation duration with reduced motion support
+  static Duration getDurationSlower(BuildContext context) {
+    return getDuration(context, durationSlower);
+  }
+
+  /// Get celebration animation duration with reduced motion support
+  static Duration getDurationCelebration(BuildContext context) {
+    return getDuration(context, durationCelebration);
+  }
+
+  /// Check if reduced motion is enabled (system setting)
+  static bool isReducedMotionEnabled(BuildContext context) {
+    return MediaQuery.of(context).disableAnimations;
+  }
+
+  /// Get text scale factor from system accessibility settings
+  static double getTextScaleFactor(BuildContext context) {
+    return MediaQuery.of(context).textScaleFactor;
+  }
+
+  /// Check if large text is enabled (text scale > 1.3x)
+  static bool isLargeTextEnabled(BuildContext context) {
+    return getTextScaleFactor(context) > 1.3;
+  }
+
+  /// Check if screen reader is enabled
+  static bool isScreenReaderEnabled(BuildContext context) {
+    return MediaQuery.of(context).accessibleNavigation;
+  }
 }
